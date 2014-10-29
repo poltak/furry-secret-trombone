@@ -1,5 +1,3 @@
-from operator import concat
-
 class _Vertex(object):
     def __init__(self, key):
         self.key = key
@@ -14,18 +12,19 @@ class _Vertex(object):
     def getCapacityBetweenNeighbour(self, neighbour):
         return self.adjacentVertices[neighbour]
 
-    # return: '0 : [4->0, 5->0, 6->1]'
     def __str__(self):
-        neighboursList = ['\n\t%2d (capacity:%2d)' % (neighbour.key, self.getCapacityBetweenNeighbour(neighbour)) for neighbour in self.adjacentVertices]
-        returnString = '\nvertex %d:\t' % self.key
-        for neighbourStr in neighboursList:
-            returnString += neighbourStr
-        return returnString + '\n'
+        """
+        Returns string representation of the vertex (trust me, it does).
+        """
+        return '\nvertex %2d:\t' % self.key + ''.join(map(
+            lambda neighbour: '\n\t%2d (capacity:%2d)' % (neighbour.key, self.getCapacityBetweenNeighbour(neighbour)),
+            self.adjacentVertices
+        )) + '\n'
 
 
 class Graph(object):
     def __init__(self):
-        self.vertices = {}
+        self.vertices = {}      # Dictionary of vertices (adjacency list style)
 
     def addVertex(self, key):
         self.vertices[key] = _Vertex(key)
@@ -36,21 +35,23 @@ class Graph(object):
         self.vertices[v1].addNeighbour(self.vertices[v2], capacity)
         self.vertices[v2].addNeighbour(self.vertices[v1], capacity)
 
-    def addEdgey(self, pair, capacity = 0):
-        self.addEdge(pair[0], pair[1], capacity)
-
+    def addEdgeHacky(self, args):
+        """
+        Hacky addEdge method to fit into the functional programming style of my parser, as I have no idea how OO Python works...
+        """
+        if len(args) == 3:
+            self.addEdge(args[0], args[1], args[2])
+        elif len(args) == 2:
+            self.addEdge(args[0], args[1])
 
     def getVertices(self):
         return self.vertices.keys()
-
-    def __iter__(self):
-        return iter(self.vertices.values())
 
     def __contains__(self, vertex):
         return vertex in iter(self.vertices)
 
     def __str__(self):
-        returnString = ''
-        for vertex in self.vertices.values():
-            returnString += str(vertex)
-        return returnString
+        """
+        Returns string representation of the graph.
+        """
+        return ''.join(map(str, self.vertices.values()))
