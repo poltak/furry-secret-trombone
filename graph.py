@@ -1,82 +1,56 @@
-import re
+from operator import concat
 
-class Graph(dict):
+class _Vertex(object):
+    def __init__(self, key):
+        self.key = key
+        self.adjacentVertices = {}
 
-    def __init__(self, graphDict):
-        """ Initializes a graph object """
-        dict.__init__(self, "")
-        self = graphDict
-        print self
+    def addNeighbour(self, neighbour, capacity = 0):
+        self.adjacentVertices[neighbour] = capacity
 
-    def vertices(self):
-        """ returns the vertices of a graph """
-        return list(self.keys())
+    def getNeighbours(self):
+        return self.adjacentVertices.keys()
 
-    def areAdjacent(self, v1, v2):
-        """
-        :return: boolean denoting whether or not v1 and v2 are neighbours
-        """
-        return self[v1].contains(v2) and self[v2].contains(v1)
+    def getCapacityBetweenNeighbour(self, neighbour):
+        return self.adjacentVertices[neighbour]
 
-    def getNeighbours(self, v1):
-        """
-        :return: returns a list of neighbours from v1 (empty if none)
-        """
-        try:
-            return self[v1]
-        except KeyError:
-            return []
-
-    def getEdges(self, v1):
-        """
-        :return: returns a list of edges from v1 (empty if none)
-        """
-        try:
-
-        except KeyError:
-            return []
-
-    def addEdge(self, v1, v2):
-        """
-        Add edge from v1 to v2 if not already there.
-        """
-        return self[v1].add(v2) and self[v2].add(v1)
-
-    def deleteEdge(self, v1, v2):
-        """
-        Delete edge between v1 and v2 if it exists.
-        """
-        return self[v1].remove(v2) and self[v2].remove(v1)
-
-    def getEdgeCapacity(self, v1, v2):
-        if not areAdjacent(v1, v2):
-            return False
-        return self[v1][indexOfV2][1]
-
-    def setEdgeCapacity(self, v1, v2, newValue):
-        if not areAdjacent(v1, v2):
-            return False
-        pass
+    # return: '0 : [4->0, 5->0, 6->1]'
+    def __str__(self):
+        neighboursList = ['\n\t%2d (capacity:%2d)' % (neighbour.key, self.getCapacityBetweenNeighbour(neighbour)) for neighbour in self.adjacentVertices]
+        returnString = '\nvertex %d:\t' % self.key
+        for neighbourStr in neighboursList:
+            returnString += neighbourStr
+        return returnString + '\n'
 
 
+class Graph(object):
+    def __init__(self):
+        self.vertices = {}
+
+    def addVertex(self, key):
+        self.vertices[key] = _Vertex(key)
+
+    def addEdge(self, v1, v2, capacity = 0):
+        if v1 not in self:  self.addVertex(v1)
+        if v2 not in self:  self.addVertex(v2)
+        self.vertices[v1].addNeighbour(self.vertices[v2], capacity)
+        self.vertices[v2].addNeighbour(self.vertices[v1], capacity)
+
+    def addEdgey(self, pair, capacity = 0):
+        self.addEdge(pair[0], pair[1], capacity)
 
 
-    def __generateEdges(self):
-        edges = []
-        for vertex in self:
-            for neighbour in self[vertex]:
-                if {neighbour, vertex} not in edges:
-                    edges.append({vertex, neighbour})
-        return edges
+    def getVertices(self):
+        return self.vertices.keys()
+
+    def __iter__(self):
+        return iter(self.vertices.values())
+
+    def __contains__(self, vertex):
+        return vertex in iter(self.vertices)
 
     def __str__(self):
-        tostring = ""
-        # TODO: look at iterating over dicts
-        for vertex in self.keys():
-            neighbourStr = ""
-            for neighbour in self[vertex]:
-                neighbourStr += "\tvertex %s (capacity: %s)\n" % (neighbour[0] , neighbour[1])
-            toString += "vertex %s :\nneighbouring vertices:\n%s\n" % (vertex, neighbourStr)
-
-        return toString
-
+        returnString = ''
+        for vertex in self.vertices.values():
+            returnString += str(vertex)
+        return returnString
