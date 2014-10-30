@@ -18,21 +18,14 @@ class Graph(object):
         Hacky addEdge method to fit into the functional programming style of my parser, as I have no idea how OO Python works...
         Adds a directed edge between the args.
         """
-        if len(args) == 3:
-            self._addEdge(args[0], args[1], args[2])
-        elif len(args) == 2:
-            self._addEdge(args[0], args[1])
+        self._addEdge(args[0], args[1], args[2])
 
     def addUndirectedEdge(self, args):
         """
         Another hacky addEdge wrapper that allows creating undirected edge.
         """
-        if len(args) == 3:
-            self._addEdge(args[0], args[1], args[2])
-            self._addEdge(args[1], args[0], args[2])
-        elif len(args) == 2:
-            self._addEdge(args[0], args[1])
-            self._addEdge(args[1], args[0])
+        self._addEdge(args[0], args[1], args[2])
+        self._addEdge(args[1], args[0], args[2])
 
     def getVertices(self):
         return self.vertices.keys()
@@ -51,5 +44,5 @@ class Graph(object):
         for item in self.vertices.items():
             retStr += 'vertex %s\n' % str(item[0])
             for neighbour in item[1]:
-                retStr += '\t%s (capacity: %s)\n' % (str(neighbour[0]), str(neighbour[1]))
+                retStr += '\t%s (label/capacity: %s)\n' % (str(neighbour[0]), str(neighbour[1]))
         return retStr

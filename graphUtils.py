@@ -73,4 +73,45 @@ def maxFlow(graph, source, sink):
 def getEulerianSequences(graph):
     if not hasEulerianCircuit(graph): return []
 
+def hol(graph, start):
+    edgeSet = getEdgeSet(graph)
+    tmp = []
+    final = []
+
+    choice = graph.getEdges(start)[0]
+    edgeSet.remove((start, choice, ?))
+    tmp.push(choice)
+
+    while not edgetSet.is_empty():
+        newChoice = getValidChoice(graph, choice, edgeSet)
+        if newChoice is None: # If no valid choice
+            final.push(tmp.pop())
+            choice = tmp.index(len(tmp))
+        else:                 # If there is a valid choice
+            edgeSet.remove((choice, newChoice, ?))
+            tmp.push(newChoice)
+
+    return final
+
+def getValidChoice(graph, current, edgeSet):
+    for edge in graph.getEdges(current):
+        if edge in edgeSet:
+            return edge
+    return None
+
+
+
+def getEdgeSet(graph):
+    edgesSet = set()
+    for vertex in graph.getVertices():
+        for edge in graph.getEdges(vertex):
+            edgeTup = (int(vertex), int(edge[0]), edge[1])
+            edgesSet.add(edgeTup)
+    return edgesSet
+
+
+
+
+
+
 
