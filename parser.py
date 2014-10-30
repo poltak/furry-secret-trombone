@@ -60,11 +60,15 @@ def _buildEdgesTaskTwo(fileObj):
 
 
 def main(filePath, taskSwitch):
-    with open(filePath, 'r') as fileObj:
+    try:
+        fileObj = open(filePath, 'r')
         numNodes = _parseNumber(fileObj.readline())     # Not used
         numEdges = _parseNumber(fileObj.readline())     # Not used
         graph = buildEdges(fileObj, taskSwitch)
-    return graph
+        print graph
+    except IOError:
+        print 'Error opening file %s' % filePath
+        sys.exit(1)
 
 def usage():
     print "usage: parser.py [graph file] [1|2]"
@@ -78,6 +82,6 @@ if __name__ == '__main__':
     elif sys.argv[2] == '2':    taskSwitch = False
     else:                       usage()
 
-    print main(sys.argv[1], taskSwitch)
+    main(sys.argv[1], taskSwitch)
 
 
