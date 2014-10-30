@@ -2,9 +2,9 @@
 Utility functions for deciding properties of graphs.
 """
 
-def hasEuclideanCircuit(graph):
+def hasEulerianCircuit(graph):
     """
-    Checks if the passed in graph contains a Euclidean circuit.
+    Checks if the passed in graph contains a Eulerian circuit.
     """
     numOddVertices = 0
 
@@ -13,9 +13,8 @@ def hasEuclideanCircuit(graph):
         if len(graph.graphDict[vertex]) % 2 != 0:
             numOddVertices += 1
 
-    # If no odd degree'd vertices in graph, then there is a Euclidean circuit
+    # If no odd degree'd vertices in graph, then there is a Eulerian circuit
     return numOddVertices == 0
-
 
 def _isBipartite(graph, currentVertex, visited, colour):
     for neighbour in graph[currentVertex]:
@@ -48,14 +47,30 @@ def isBipartite(graph):
     return _isBipartite(graph, start, visited, colour)
 
 def _findPath(graph, source, sink, path):
-    if source == sink:
-        return path
+    if source == sink:  return path
     for edge in graph.getEdges(source):
-        residual = edge
+        residual = edge[1] - flow   # TODO: find out what is flow
+        if residual > 0 and edge not in path:
+            result = _findPath(edge[0], sink, path + [edge])
+            if result != None: return result
 
+def maxFlow(graph, source, sink):
+    # Try to find a path
+    path = _findPath(source, sink, [])
+    while path != None:
+        residuals = map(
+            lambda edge: edge[1] - flow[edge], # TODO: find out what is flow
+            path
+        )
+        for edge in path:
+            flow[edge[0]] += min(residuals)
+            flow[edadfg] -= min(residuals)
 
-def maxFlow(graph):
-    pass
+        # Try again with next path
+        path = _findPath(source, sink, [])
+    return sum(flow[edge] for edge in graph.getEdges(source))
 
+def getEulerianSequences(graph):
+    if not hasEulerianCircuit(graph): return []
 
 

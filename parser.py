@@ -11,7 +11,7 @@ reading through it, or you'll probably cry.
 NUM_PATTERN = r"\d+"
 E_NODES_PATTERN = r"\d+, \d+"
 NETWORK_EDGE_PATTERN = r"(\d+ \d+|\d+)"
-LIST_ENTRIES_PATTERN = r"(G|T|C|A)"
+SEQ_PATTERN = r"(G|T|C|A)"
 
 
 def _parseNumber(line):
@@ -22,54 +22,63 @@ def _parseNumber(line):
     match = re.findall(NUM_PATTERN, line)
     return int(match[0])
 
-def buildEdges(fileObj, taskSwitch):
+def _parseSequence(line):
     """
-    Switches between the two main edge building methods (task 1 and 2)
+    Parses the lines containing the sequences, and returns them as a single string.
     """
-    return _buildEdgesTaskOne(fileObj) if taskSwitch else _buildEdgesTaskTwo(fileObj)
+    return ''.join(re.findall(SEQ_PATTERN, line))
 
-def _buildEdgesTaskOne(fileObj):
-    graph = Graph()
-
-    line = fileObj.readline()
-    while line != "];\n":
-        pairs = []
-        found = re.findall(E_NODES_PATTERN, line)
-        pairs = map(
-            lambda pair: map(
-                int,
-                re.findall(NUM_PATTERN, pair)
-            ),
-            found
-        )
-        map(graph.addUndirectedEdge, pairs)
-        line = fileObj.readline()
-    return graph
-
-def _buildEdgesTaskTwo(fileObj):
-    graph = Graph()
-    eachLine = map(
-        lambda line: map(
-            int,
-            re.findall(NUM_PATTERN, line)
-        ),
-        fileObj
-    )
-    map(graph.addDirectedEdge, eachLine)
-    return graph
-
-def createGraph(filePath, taskSwitch):
+def createSectOneGraph(filePath):
     try:
         fileObj = open(filePath, 'r')
-        numNodes = _parseNumber(fileObj.readline())     # Not used
-        numEdges = _parseNumber(fileObj.readline())     # Not used
-        return buildEdges(fileObj, taskSwitch)
+        numNodes = _parseNumber(fileObj.readline())
+        numEdges = _parseNumber(fileObj.readline())
+
+        # Parse file
+        eNodes = ''
+        line = fileObj.readline()
+        while line != '];\n':
+            eNodes += line
+            line = fileObj.readline()
+        eStart = _parseSequence(fileObj.readline())
+        seq = _parseSequence(fileObj.readline())
+
+        graph = Graph()
+        # Set all the edges as specified in input file
+        i = 0
+        for line in re.split(r'\n', eNodes):
+            for pair in re.findall(E_NODES_PATTERN, line):
+                graph.addUndirectedEdge(re.findall(NUM_PATTERN, pair) + [eStart[i]])
+                i += 1
+            line = fileObj.readline()
+        return graph
     except IOError:
         print 'Error opening file %s' % filePath
         sys.exit(1)
 
-def main(filePath, taskSwitch):
-    print createGraph(filePath, taskSwitch)
+def createSectTwoGraph(filePath):
+    try:
+        fileObj = open(filePath, 'r')
+        numNodes = _parseNumber(fileObj.readline())     # Not used
+        numEdges = _parseNumber(fileObj.readline())     # Not used
+
+        graph = Graph()
+        # Set all the edges as specified in input file
+        map(graph.addDirectedEdge, map(
+            lambda line: map(
+                int,
+                re.findall(NUM_PATTERN, line)
+            ),
+            fileObj
+        ))
+        return graph
+    except IOError:
+        print 'Error opening file %s' % filePath
+        sys.exit(1)
+
+def main(filePath, taskOneSwitch):
+    graph = createSectOneGraph(filePath) if taskOneSwitch else createSectTwoGraph(filePath)
+    print graph
 
 def usage():
     print "usage: parser.py [graph file] [1|2]"
@@ -77,12 +86,12 @@ def usage():
 
 if __name__ == '__main__':
     # Basic arg checking
-    if len(sys.argv) != 3:
-        usage()
-    if sys.argv[2] == '1':      taskSwitch = True
-    elif sys.argv[2] == '2':    taskSwitch = False
+    if len(sys.argv) != 3:      usage()
+
+    if sys.argv[2] == '1':      taskOneSwitch = True
+    elif sys.argv[2] == '2':    taskOneSwitch = False
     else:                       usage()
 
-    main(sys.argv[1], taskSwitch)
+    main(sys.argv[1], taskOneSwitch)
 
 

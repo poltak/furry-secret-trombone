@@ -1,33 +1,9 @@
-class _Vertex(object):
-    def __init__(self, key):
-        self.key = key
-        self.adjacentVertices = {}
-
-    def addNeighbour(self, neighbour, capacity = 0):
-        self.adjacentVertices[neighbour] = capacity
-
-    def getNeighbours(self):
-        return self.adjacentVertices.keys()
-
-    def getCapacityBetweenNeighbour(self, neighbour):
-        return self.adjacentVertices[neighbour]
-
-    def __str__(self):
-        """
-        Returns string representation of the vertex (trust me, it does).
-        """
-        return '\nvertex %2d:\t' % self.key + ''.join(map(
-            lambda neighbour: '\n\t%2d (capacity:%2d)' % (neighbour.key, self.getCapacityBetweenNeighbour(neighbour)),
-            self.adjacentVertices
-        )) + '\n'
-
-
 class Graph(object):
     def __init__(self):
-        self.vertices = {}      # Dictionary of vertices (adjacency list style)
+        self.vertices = dict()      # Dictionary of vertices to sets of vertices (adjacency list style)
 
     def addVertex(self, key):
-        self.vertices[key] = _Vertex(key)
+        self.vertices[key] = set()
 
     def _addEdge(self, v1, v2, capacity = 0):
         """
@@ -35,7 +11,7 @@ class Graph(object):
         """
         if v1 not in self:  self.addVertex(v1)
         if v2 not in self:  self.addVertex(v2)
-        self.vertices[v1].addNeighbour(self.vertices[v2], capacity)
+        self.vertices[v1].add((v2, capacity))
 
     def addDirectedEdge(self, args):
         """
@@ -61,6 +37,9 @@ class Graph(object):
     def getVertices(self):
         return self.vertices.keys()
 
+    def getEdges(self, vertex):
+        return self.vertices[vertex]
+
     def __contains__(self, vertex):
         return vertex in iter(self.vertices)
 
@@ -68,4 +47,9 @@ class Graph(object):
         """
         Returns string representation of the graph.
         """
-        return ''.join(map(str, self.vertices.values()))
+        retStr = ''
+        for item in self.vertices.items():
+            retStr += 'vertex %s\n' % str(item[0])
+            for neighbour in item[1]:
+                retStr += '\t%s (capacity: %s)\n' % (str(neighbour[0]), str(neighbour[1]))
+        return retStr
