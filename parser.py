@@ -42,7 +42,7 @@ def _buildEdgesTaskOne(fileObj):
             ),
             found
         )
-        map(graph.addEdgeHacky, pairs)
+        map(graph.addUndirectedEdge, pairs)
         line = fileObj.readline()
     return graph
 
@@ -55,20 +55,21 @@ def _buildEdgesTaskTwo(fileObj):
         ),
         fileObj
     )
-    map(graph.addEdgeHacky, eachLine)
+    map(graph.addDirectedEdge, eachLine)
     return graph
 
-
-def main(filePath, taskSwitch):
+def createGraph(filePath, taskSwitch):
     try:
         fileObj = open(filePath, 'r')
         numNodes = _parseNumber(fileObj.readline())     # Not used
         numEdges = _parseNumber(fileObj.readline())     # Not used
-        graph = buildEdges(fileObj, taskSwitch)
-        print graph
+        return buildEdges(fileObj, taskSwitch)
     except IOError:
         print 'Error opening file %s' % filePath
         sys.exit(1)
+
+def main(filePath, taskSwitch):
+    print createGraph(filePath, taskSwitch)
 
 def usage():
     print "usage: parser.py [graph file] [1|2]"
