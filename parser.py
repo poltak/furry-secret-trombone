@@ -1,5 +1,6 @@
 import re
 import sys
+from collections import namedtuple
 from graph import Graph
 
 """
@@ -51,7 +52,10 @@ def createSectOneGraph(filePath):
                 graph.addUndirectedEdge(re.findall(NUM_PATTERN, pair) + [eStart[i]])
                 i += 1
             line = fileObj.readline()
-        return graph
+
+        # Return both the graph object and sequence
+        GraphInfo = namedtuple('GraphInfo', ['graph', 'seq'])
+        return GraphInfo(graph=graph, seq=seq)
     except IOError:
         print 'Error opening file %s' % filePath
         sys.exit(1)

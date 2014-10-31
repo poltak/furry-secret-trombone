@@ -1,7 +1,14 @@
 from parser import createSectOneGraph
-from graphUtils import getEdgeSet
+import graphUtils
+import sys
 
 if __name__ == "__main__":
-  g = createSectOneGraph('testg1')
-  t = getEdgeSet(g)
-  print t
+  g, seq = createSectOneGraph(sys.argv[1])
+  for circuit in graphUtils.getEulerianCircuits(g):
+    labels = graphUtils.getLabelsForPath(g, circuit)
+    print graphUtils.long_substr([seq, labels])
+
+    both = [seq, labels]
+
+
+
