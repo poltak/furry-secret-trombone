@@ -3,36 +3,14 @@ Utility functions for deciding properties of graphs.
 """
 from edgeset import EdgeSet
 
-def maxFlow(origGraph, flowGraph, source, sink):
-    # Try to find a path
-    path = _findPath(source, sink, [])
-    while path != None:
-        residuals = map(
-            lambda edge: edge[1] - flowGraph[edge], # TODO: find out what is flow
-            path
-        )
-        for edge in path:
-            flow[edge[0]] += min(residuals)
-            flow[edadfg] -= min(residuals)
-
-        # Try again with next path
-        path = _findPath(source, sink, [])
-    return sum(flow[edge] for edge in graph.getEdges(source))
-
-def _findPath(graph, source, sink, path):
-    if source == sink:  return path
-    for edge in graph.getEdges(source):
-        residual = edge[1] - flow   # TODO: find out what is flow
-        if residual > 0 and edge not in path:
-            result = _findPath(edge[0], sink, path + [edge])
-            if result != None: return result
-
 def getEulerianCircuits(graph):
     """
     Returns a list of all possible Eulerian circuits for a given graph.
     If graph has none, it returns an empty list.
     """
     if not _hasEulerianCircuit(graph): return []
+
+    # Find the Euler circuits starting from all vertices in the graph
     eulerCircuits = []
     for vertex in graph.getVertices():
         circuit = _hierholzer(graph, vertex)
@@ -50,28 +28,20 @@ def getLabelsForPath(graph, path):
     Given a path in a graph, returns a string containing all the labels on that path.
     """
     labels = ''
-    for vertex in range(0, len(path) -1):
+    for vertex in range(len(path)-1):
        labels += graph.getEdgeLabel(path[vertex], path[vertex+1])
     return labels
 
-# TODO
-def long_substr(data):
+def longestCommonSubstring(seq, foundSeq):
+    """
+    Given two strings, finds the longest common substring.
+    """
     substr = ''
-    if len(data) > 1 and len(data[0]) > 0:
-        for i in range(len(data[0])):
-            for j in range(len(data[0])-i+1):
-                if j > len(substr) and is_substr(data[0][i:i+j], data):
-                    substr = data[0][i:i+j]
+    for i in range(len(seq)):
+        for j in range(len(seq)-i+1):
+            if j > len(substr) and seq[i:i+j] in foundSeq:
+                substr = seq[i:i+j]
     return substr
-
-# TODO
-def is_substr(find, data):
-    if len(data) < 1 and len(find) < 1:
-        return False
-    for i in range(len(data)):
-        if find not in data[i]:
-            return False
-    return True
 
 def _hasEulerianCircuit(graph):
     """

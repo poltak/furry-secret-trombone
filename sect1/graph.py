@@ -1,4 +1,7 @@
 class Graph(object):
+    """
+    Basic Graph ADT using adjacency lists for each vertex
+    """
     def __init__(self):
         self.vertices = dict()      # Dictionary of vertices to sets of vertices (adjacency list style)
 
@@ -13,17 +16,9 @@ class Graph(object):
         if v2 not in self:  self.addVertex(v2)
         self.vertices[v1].add((v2, capacity))
 
-    def addDirectedEdge(self, args):
-        """
-        Hacky addEdge method to fit into the functional programming style of my parser, as I have no idea how OO Python works...
-        Adds a directed edge between the args.
-        """
-        self._addEdge(int(args[0]), int(args[1]), args[2])
-        self._addEdge(int(arg[1]), int(args[0]), 0)
-
     def addUndirectedEdge(self, args):
         """
-        Another hacky addEdge wrapper that allows creating undirected edge.
+        A hacky addEdge wrapper that allows creating undirected edge.
         """
         self._addEdge(int(args[0]), int(args[1]), args[2])
         self._addEdge(int(args[1]), int(args[0]), args[2])
@@ -42,7 +37,6 @@ class Graph(object):
             if edge[0] == v2:
                 edge[1] += change
                 break
-
 
     def getVertexDegree(self, vertex):
         return len(self.getEdges(vertex))
