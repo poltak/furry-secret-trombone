@@ -27,23 +27,26 @@ class FlowGraph(object):
         edge = Edge(v1, v2, capacity)
         reverseEdge = Edge(v2, v1, 0)
 
-        # Make links from both edges to each other
-        edge.addReverseEdge(reverseEdge)
-        reverseEdge.addReverseEdge(edge)
-
         # Set up the edges in the graph
         self.origGraph[v1].append(edge)
 
         # Set up the flows in the edge flow dictionary
         self.edgeFlow[edge] = 0
-        self.edgeFlow[edge.reverseEdge] = 0
 
     def updateEdgeFlow(self, edge, newValue):
         """
         Given a new value, add it to the flow on given edge, and remove it from the reverse edge.
         """
         self.edgeFlow[edge] += newValue
-        self.edgeFlow[edge.reverseEdge] -=newValue
+
+    def __repr__(self):
+        retStr = ''
+        for vertex in self.origGraph:
+            retStr += '%d: ' % vertex
+            for edge in self.getEdges(vertex):
+                retStr += '%d (%d-%d) ' % (edge.sink, edge.capacity, self.edgeFlow[edge])
+            retStr += '\n'
+        return retStr
 
 class Edge(object):
     """

@@ -3,6 +3,8 @@ from parser import createFlowGraph
 from maxflow import maxFlow
 
 def main(filePath):
+    # Recursion limit needs to be exceeded on large graphs
+    sys.setrecursionlimit(10000000)
     flowGraph, numVertices = createFlowGraph(filePath)
 
     # As per assignment specs, the source and sink will always be these vertices
@@ -11,8 +13,7 @@ def main(filePath):
 
     # Calculate and print the max flow
     flow = maxFlow(flowGraph, source, sink)
-    # print 'the calculated max flow is: %d' % flow
-    print flow
+    print '%s\nMax Flow: %d' % (flowGraph, flow)
 
 def usage():
     print 'usage: main.py [graph file]'
